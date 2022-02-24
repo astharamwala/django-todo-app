@@ -4,9 +4,22 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Task
 
+from django.contrib.auth.views import LoginView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-# Create your views here.
-class TaskList(ListView):
+
+class CustomLoginView(LoginView):
+    """
+        Login for users.
+    """
+    template_name = 'base/login.html'
+    fields = "__all__"
+    redirect_authenticated_user = True
+
+    def get_success_url(self) -> str:
+        return reverse_lazy('tasks')
+
+class TaskList(LoginRequiredMixin, ListView):
     """
         List all the tasks.
     """
@@ -15,7 +28,7 @@ class TaskList(ListView):
     template_name = 'base/tasks.html'
 
 
-class TaskDetail(DetailView):
+class TaskDetail(LoginRequiredMixin, DetailView):
     """
         Display task details.
     """
@@ -24,7 +37,7 @@ class TaskDetail(DetailView):
     template_name = 'base/task.html'
 
 
-class TaskCreate(CreateView):
+class TaskCreate(LoginRequiredMixin, CreateView):
     """
         Create task.
     """
@@ -33,7 +46,7 @@ class TaskCreate(CreateView):
     success_url = reverse_lazy('tasks')
 
 
-class TaskUpdate(UpdateView):
+class TaskUpdate(LoginRequiredMixin, UpdateView):
     """
         Update a task.
     """
@@ -42,7 +55,7 @@ class TaskUpdate(UpdateView):
     success_url = reverse_lazy('tasks')
 
 
-class TaskDelete(DeleteView):
+class TaskDelete(LoginRequiredMixin, DeleteView):
     """
         Delete a task.
     """
