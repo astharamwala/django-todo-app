@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+    app:
+        build:
+            context: .
+        ports:
+            - "8065:8080"
+        volumes:
+            - ./todo_list:/app
+        command: >
+            sh -c "python manage.py runserver 0.0.0.0:8080"
+        depends_on:
+            - db
+
+    db:
+        hostname: postgres
+        image: postgres:10.7
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=postgres
+        ports:
+            - "5432:5432"
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
